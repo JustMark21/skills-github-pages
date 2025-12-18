@@ -74,10 +74,3 @@ The app is self-contained and runs entirely in the browser (no backend required)
 ## 📄 License
 
 This project is licensed under the MIT License. See the LICENSE file for details (or add one if you need an explicit license file).
-
-## Contact / Support
-
-If you want me to update the README in the repository, or to commit the file for you, say so and I will push the change. I can also help:
-- Rewrite copy for tone/audience
-- Add screenshots or badges
-- Add a CONTRIBUTING or LICENSE file
