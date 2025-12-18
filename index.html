@@ -125,7 +125,18 @@
                     <textarea id="selectedItemsInput" name="selected_items" rows="6" readonly 
                         class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none resize-none text-gray-600"
                         placeholder="No items selected yet. Go back up and click items to add them."></textarea>
-                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Use these ID numbers if filling out a paper form.</p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-between gap-4 mt-2">
+                        <p class="text-xs text-gray-500"><i class="fas fa-info-circle"></i> Use these ID numbers if filling out a paper form.</p>
+                    </div>
+
+                    <!-- SUBSTITUTION NOTE ADDED HERE -->
+                    <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start">
+                        <i class="fas fa-sync-alt text-amber-500 mt-0.5 mr-2"></i>
+                        <p class="text-sm text-amber-800 font-medium">
+                            Note: If a selected item is out of stock, we will substitute it with a similar item.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Student Details -->
@@ -407,18 +418,30 @@
             
             const fullText = `Subject: Order for ${data.studentName}\n\n${data.body}`;
             
-            navigator.clipboard.writeText(fullText).then(() => {
-                alert("Order text copied to clipboard! You can now paste it into your email.");
-            }, (err) => {
-                // Fallback for older browsers
-                const textArea = document.createElement("textarea");
-                textArea.value = fullText;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand("copy");
-                document.body.removeChild(textArea);
-                alert("Order text copied to clipboard! You can now paste it into your email.");
-            });
+            // Clipboard API with fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullText).then(() => {
+                    alert("Order text copied to clipboard! You can now paste it into your email.");
+                }).catch((err) => {
+                   fallbackCopy(fullText);
+                });
+            } else {
+                fallbackCopy(fullText);
+            }
+        }
+
+        function fallbackCopy(text) {
+             const textArea = document.createElement("textarea");
+             textArea.value = text;
+             document.body.appendChild(textArea);
+             textArea.select();
+             try {
+                 document.execCommand("copy");
+                 alert("Order text copied to clipboard! You can now paste it into your email.");
+             } catch (err) {
+                 alert("Unable to copy automatically. Please select the text and copy manually.");
+             }
+             document.body.removeChild(textArea);
         }
 
         // --- SUBMIT FUNCTION ---
