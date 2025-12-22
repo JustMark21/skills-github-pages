@@ -374,13 +374,14 @@
             
             categoryFilters.innerHTML = categories.map(cat => {
                 const isActive = state.activeCategory === cat;
-                const activeClasses = "bg-blue-600 text-white shadow-md transform scale-105";
+                const activeClasses = "bg-blue-600 text-white shadow-md";
                 const inactiveClasses = "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-transparent";
                 
+                // Smaller buttons: px-3 py-1 text-xs
                 return `
                     <button 
                         onclick="setCategory('${cat}')" 
-                        class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${isActive ? activeClasses : inactiveClasses}">
+                        class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${isActive ? activeClasses : inactiveClasses}">
                         ${cat}
                     </button>
                 `;
@@ -447,7 +448,7 @@
                 };
 
                 const imgContainer = document.createElement('div');
-                imgContainer.className = "h-48 bg-gray-200 relative overflow-hidden group";
+                imgContainer.className = "h-40 bg-gray-200 relative overflow-hidden group"; // Reduced height slightly h-40
                 
                 const img = document.createElement('img');
                 img.src = item.image;
@@ -469,22 +470,22 @@
                 imgContainer.appendChild(viewLink);
 
                 const content = document.createElement('div');
-                content.className = "p-4 flex-grow flex flex-col justify-between";
+                content.className = "p-3 flex-grow flex flex-col justify-between";
                 
                 const title = document.createElement('h3');
-                title.className = "font-semibold text-gray-800 mb-2 leading-tight";
+                title.className = "font-semibold text-gray-800 mb-2 leading-tight text-sm";
                 title.innerText = `${item.id}. ${item.name}`;
                 
                 const btnContainer = document.createElement('div');
-                btnContainer.className = "mt-4 flex justify-between items-center";
+                btnContainer.className = "mt-3 flex justify-between items-center";
                 
                 const categoryBadge = document.createElement('span');
-                categoryBadge.className = "text-xs font-medium bg-gray-100 text-gray-600 px-2 py-1 rounded";
+                categoryBadge.className = "text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded";
                 categoryBadge.innerText = item.category;
 
                 const selectBtn = document.createElement('button');
-                selectBtn.className = `btn-check w-8 h-8 rounded-full border-2 flex items-center justify-center ${isSelected ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 text-transparent'}`;
-                selectBtn.innerHTML = '<i class="fas fa-check text-xs"></i>';
+                selectBtn.className = `btn-check w-7 h-7 rounded-full border-2 flex items-center justify-center ${isSelected ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 text-transparent'}`;
+                selectBtn.innerHTML = '<i class="fas fa-check text-[10px]"></i>';
 
                 btnContainer.appendChild(categoryBadge);
                 btnContainer.appendChild(selectBtn);
