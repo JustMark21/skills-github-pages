@@ -48,16 +48,16 @@
 <body class="bg-gray-50 text-gray-800 font-sans">
 
     <!-- Header -->
-    <header class="bg-[#ffffff] shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
+    <header class="bg-[#ffffff] shadow-md sticky top-0 z-50 transition-all duration-300" id="mainHeader">
+        <div class="container mx-auto px-4 pt-4 pb-2">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-2">
                 <!-- LOGO AND TITLE SECTION -->
                 <div class="mb-4 md:mb-0 flex items-center justify-center md:justify-start w-full md:w-auto">
                     
                     <!-- SCHOOL LOGO IMAGE -->
                     <img src="images/logo/logo.png" 
                          alt="School Logo" 
-                         class="h-16 w-auto mr-4 object-contain rounded-md">
+                         class="h-14 w-auto mr-4 object-contain rounded-md">
 
                     <!-- Title Text -->
                     <div class="text-center md:text-left">
@@ -69,8 +69,8 @@
                 <!-- Search Bar Container -->
                 <div class="w-full md:w-1/2 lg:w-1/3 flex flex-col items-end">
                     <div class="w-full relative">
-                        <input type="text" id="searchInput" placeholder="Search for items (e.g., 'Rice', 'Tuna')..." 
-                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                        <input type="text" id="searchInput" placeholder="Search items (e.g., 'Rice')..." 
+                            class="w-full pl-10 pr-4 py-2 border rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-colors">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                         <button id="clearSearchBtn" class="hidden absolute right-3 top-2.5 text-gray-400 hover:text-gray-600" title="Clear Search">
                             <i class="fas fa-times"></i>
@@ -80,7 +80,8 @@
             </div>
 
             <!-- Category Filters (New Row) -->
-            <div class="mt-4 flex overflow-x-auto scrollbar-hide pb-2 md:justify-end gap-2" id="categoryFilters">
+            <!-- Updated layout: Centered, cleaner spacing, and divider line -->
+            <div class="pt-2 border-t border-gray-100 flex overflow-x-auto scrollbar-hide pb-1 justify-start md:justify-center gap-3" id="categoryFilters">
                 <!-- Buttons injected by JS -->
             </div>
         </div>
@@ -385,6 +386,20 @@
             state.activeCategory = category;
             renderCategories(); // Re-render buttons to update active state
             renderGrid();
+            
+            // Auto-scroll to grid for better visibility
+            const gridElement = document.getElementById('catalogGrid');
+            const headerHeight = document.getElementById('mainHeader').offsetHeight;
+            const elementPosition = gridElement.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - headerHeight - 20;
+
+            // Only scroll if the grid is effectively below the current view or we are looking at the instructions
+            if (window.pageYOffset < offsetPosition) {
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
         }
 
         function clearAllFilters() {
