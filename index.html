@@ -35,6 +35,15 @@
         .instruction-step {
             @apply flex flex-col items-center text-center p-4 bg-blue-50 rounded-lg;
         }
+        /* Error Animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake-animation {
+            animation: shake 0.4s ease-in-out;
+        }
         /* Hide scrollbar for category list on mobile but keep functionality */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -76,7 +85,6 @@
                 <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
                     
                     <!-- Search Bar Container -->
-                    <!-- Order-2 on desktop ensures it stays on the right, but we can just structure HTML naturally -->
                     <div class="w-full md:w-48 relative order-1 md:order-2">
                         <input type="text" id="searchInput" placeholder="Search..." 
                             class="w-full pl-9 pr-8 py-1.5 text-sm border rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-colors">
@@ -87,7 +95,6 @@
                     </div>
 
                     <!-- Category Filters -->
-                    <!-- Flex-wrap ensures they don't scroll, just stack neatly if needed -->
                     <div class="flex flex-wrap justify-center md:justify-end gap-1.5 order-2 md:order-1 w-full md:w-auto" id="categoryFilters">
                         <!-- Buttons injected by JS -->
                     </div>
@@ -162,12 +169,13 @@
             <h2 class="text-3xl font-bold text-center mb-2">Finalize Your Selection</h2>
             <p class="text-center text-gray-500 mb-8">Please fill out the details below to complete your order.</p>
             
-            <form id="orderForm" class="space-y-6" onsubmit="handleFormSubmit(event)">
+            <!-- Added novalidate to handle validation via custom JS for better UX -->
+            <form id="orderForm" class="space-y-6" onsubmit="handleFormSubmit(event)" novalidate>
                 
-                <!-- School Site Selection (NEW ADDITION) -->
-                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                    <label for="schoolSite" class="block text-sm font-bold text-blue-800 mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Select School Site</label>
-                    <select id="schoolSite" name="schoolSite" required 
+                <!-- School Site Selection (IMPROVED VALIDATION) -->
+                <div id="schoolSiteContainer" class="bg-blue-50 p-4 rounded-lg border border-blue-100 transition-colors duration-300">
+                    <label for="schoolSite" class="block text-sm font-bold text-blue-800 mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Select School Site <span class="text-red-500">*</span></label>
+                    <select id="schoolSite" name="schoolSite" required onchange="clearError('schoolSite')"
                         class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 bg-white">
                         <option value="" disabled selected>-- Click to Choose Location --</option>
                         <option value="Main Site (Jim Thorpe School)">The Main Site (Jim Thorpe School) - 3000 West 1st Street</option>
@@ -178,6 +186,11 @@
                         <option value="New Utrecht High School">New Utrecht High School - 1601 80th Street</option>
                         <option value="P.S. 62 (The Ditmas Park School)">P.S. 62 (The Ditmas Park School) - 700 Cortelyou Road</option>
                     </select>
+                    
+                    <!-- Hidden Error Message -->
+                    <p id="schoolSiteError" class="hidden text-red-600 text-sm font-bold mt-2">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Please select a school site to proceed.
+                    </p>
                 </div>
 
                 <!-- Selected Items List (Read Only) -->
@@ -203,13 +216,13 @@
                 <!-- Student Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Student Full Name</label>
-                        <input type="text" id="studentName" name="studentName" required 
+                        <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Student Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="studentName" name="studentName" required oninput="clearError('studentName')"
                             class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. John Doe">
                     </div>
                     <div>
-                        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-1">Parent/Guardian Full Name</label>
-                        <input type="text" id="parentName" name="parentName" required 
+                        <label for="parentName" class="block text-sm font-medium text-gray-700 mb-1">Parent/Guardian Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="parentName" name="parentName" required oninput="clearError('parentName')"
                             class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. Jane Doe">
                     </div>
                 </div>
@@ -217,13 +230,13 @@
                 <!-- Household Info -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="email" name="email" required 
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" required oninput="clearError('email')"
                             class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="name@example.com">
                     </div>
                     <div>
-                        <label for="childCount" class="block text-sm font-medium text-gray-700 mb-1">Number of Children in Household</label>
-                        <input type="number" id="childCount" name="childCount" min="1" required 
+                        <label for="childCount" class="block text-sm font-medium text-gray-700 mb-1">Number of Children in Household <span class="text-red-500">*</span></label>
+                        <input type="number" id="childCount" name="childCount" min="1" required oninput="clearError('childCount')"
                             class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. 2">
                     </div>
                 </div>
@@ -390,7 +403,6 @@
 
         // --- CATEGORY LOGIC ---
         function renderCategories() {
-            // Get unique categories
             const categories = ['All', ...new Set(catalogItems.map(item => item.category))].sort();
             
             categoryFilters.innerHTML = categories.map(cat => {
@@ -398,7 +410,6 @@
                 const activeClasses = "bg-blue-600 text-white shadow-md";
                 const inactiveClasses = "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-transparent";
                 
-                // Smaller buttons: px-3 py-1 text-xs
                 return `
                     <button 
                         onclick="setCategory('${cat}')" 
@@ -411,16 +422,14 @@
 
         function setCategory(category) {
             state.activeCategory = category;
-            renderCategories(); // Re-render buttons to update active state
+            renderCategories(); 
             renderGrid();
             
-            // Auto-scroll to grid for better visibility
             const gridElement = document.getElementById('catalogGrid');
             const headerHeight = document.getElementById('mainHeader').offsetHeight;
             const elementPosition = gridElement.getBoundingClientRect().top + window.pageYOffset;
             const offsetPosition = elementPosition - headerHeight - 20;
 
-            // Only scroll if the grid is effectively below the current view or we are looking at the instructions
             if (window.pageYOffset < offsetPosition) {
                 window.scrollTo({
                     top: offsetPosition,
@@ -442,7 +451,6 @@
         function renderGrid() {
             grid.innerHTML = '';
             
-            // Filter by BOTH Search Query AND Category
             const filteredItems = catalogItems.filter(item => {
                 const matchesSearch = item.name.toLowerCase().includes(state.searchQuery) || 
                                       item.id.toString().includes(state.searchQuery);
@@ -469,7 +477,7 @@
                 };
 
                 const imgContainer = document.createElement('div');
-                imgContainer.className = "h-40 bg-gray-200 relative overflow-hidden group"; // Reduced height slightly h-40
+                imgContainer.className = "h-40 bg-gray-200 relative overflow-hidden group"; 
                 
                 const img = document.createElement('img');
                 img.src = item.image;
@@ -554,8 +562,71 @@
             document.getElementById('requestFormSection').scrollIntoView({ behavior: 'smooth' });
         }
 
+        // --- IMPROVED VALIDATION LOGIC ---
+        function validateForm() {
+            let isValid = true;
+            let firstError = null;
+
+            // 1. Validate School Site
+            const schoolSite = document.getElementById('schoolSite');
+            const schoolSiteContainer = document.getElementById('schoolSiteContainer');
+            const schoolSiteError = document.getElementById('schoolSiteError');
+
+            if (schoolSite.value === "") {
+                schoolSiteContainer.classList.remove('bg-blue-50', 'border-blue-100');
+                schoolSiteContainer.classList.add('bg-red-50', 'border-red-300', 'shake-animation');
+                schoolSiteError.classList.remove('hidden');
+                isValid = false;
+                firstError = schoolSite;
+                
+                // Remove shake animation after it runs so it can run again
+                setTimeout(() => {
+                    schoolSiteContainer.classList.remove('shake-animation');
+                }, 500);
+            }
+
+            // 2. Validate Text Inputs (Generic Loop)
+            const requiredIds = ['studentName', 'parentName', 'email', 'childCount'];
+            requiredIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) {
+                    el.classList.add('border-red-500', 'bg-red-50');
+                    if(isValid) firstError = el; // Capture first error if not school site
+                    isValid = false;
+                }
+            });
+
+            if (!isValid && firstError) {
+                // Scroll to the specific error
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // If it's a text input, focus it
+                if(firstError.tagName === 'INPUT') firstError.focus();
+            }
+
+            return isValid;
+        }
+
+        function clearError(fieldId) {
+            if(fieldId === 'schoolSite') {
+                const container = document.getElementById('schoolSiteContainer');
+                const errorMsg = document.getElementById('schoolSiteError');
+                container.classList.add('bg-blue-50', 'border-blue-100');
+                container.classList.remove('bg-red-50', 'border-red-300');
+                errorMsg.classList.add('hidden');
+            } else {
+                // Generic cleaner
+                const el = document.getElementById(fieldId);
+                el.classList.remove('border-red-500', 'bg-red-50');
+            }
+        }
+
         // --- HELPER TO GENERATE ORDER TEXT ---
         function getOrderText() {
+            // RUN VALIDATION FIRST
+            if (!validateForm()) {
+                return null;
+            }
+
             const formData = new FormData(document.getElementById('orderForm'));
             const schoolSite = formData.get('schoolSite');
             const studentName = formData.get('studentName');
@@ -563,12 +634,6 @@
             const childCount = formData.get('childCount');
             const allergies = formData.get('allergies') || 'None';
             const items = formData.get('selected_items');
-
-            if(!studentName) return null; // Simple validation check
-            if(!schoolSite) {
-                alert("Please select a School Site.");
-                return null;
-            }
 
             const body = `ORDER DETAILS\n------------------\n` +
                          `School Site: ${schoolSite}\n` +
@@ -582,11 +647,8 @@
 
         // --- COPY FUNCTION ---
         function copyOrderText() {
-            const data = getOrderText();
-            if (!data) {
-                // Alert handled in getOrderText for school site, or student name
-                return;
-            }
+            const data = getOrderText(); // This now triggers validation visual effects
+            if (!data) return; // Stop if validation failed
             
             const fullText = `Subject: Order for ${data.studentName}\n\n${data.body}`;
             
@@ -620,10 +682,8 @@
         function handleFormSubmit(e) {
             e.preventDefault();
             
-            const data = getOrderText();
-            if(!data) {
-                return;
-            }
+            const data = getOrderText(); // This now triggers validation visual effects
+            if(!data) return; // Stop if validation failed
             
             const recipient = "CatalogCompanionPS370@outlook.com";
             const subject = `Order for ${data.studentName}`;
@@ -631,7 +691,6 @@
             // Construct the mailto link
             const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(data.body)}`;
             
-            // Try to open using a temporary link (often works better than window.location)
             const link = document.createElement('a');
             link.href = mailtoUrl;
             document.body.appendChild(link);
